@@ -33,7 +33,7 @@
 
 @font-face {
   font-family: "CalSans";
-  src: url("/public/fonts/CalSans-SemiBold.woff2") format("truetype");
+  src: url("/fonts/CalSans-SemiBold.woff2") format("truetype");
   font-weight: 800;
   font-style: normal;
 }

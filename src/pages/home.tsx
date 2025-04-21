@@ -1,3 +1,4 @@
+import { Social } from '@/components/app/social'
 import { Button } from '@/components/ui/button'
 import {
   ExternalLink,
@@ -15,7 +16,7 @@ export function Home() {
     <>
       <Helmet title="Home" />
 
-      <div className="mt-32">
+      <div className="min-h-[80vh] flex items-center justify-center">
         <div className="w-full max-w-md mx-auto space-y-8 relative">
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-primary/50 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/50 rounded-full blur-3xl" />
@@ -37,7 +38,7 @@ export function Home() {
           </div>
 
           {/* Links section */}
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-4">
             <Link to="#" className="block">
               <Button
                 size="lg"
@@ -74,31 +75,11 @@ export function Home() {
 
           {/* Social media icons */}
           <div className="flex justify-center gap-6 pt-6 relative z-10">
-            <Link to="#" className="group ">
-              <div className="bg-muted p-3 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:border group-hover:border-primary/50">
-                <Facebook className="h-6 w-6 text-muted-foreground" />
-              </div>
-            </Link>
+            <Social link="#" icon={Facebook} />
 
-            <Link to="#" className="group">
-              <div className="bg-muted p-3 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:border group-hover:border-primary/50">
-                <Youtube className="h-6 w-6 text-muted-foreground" />
-              </div>
-            </Link>
+            <Social link="#" icon={Instagram} />
 
-            <Link to="#" className="group">
-              <div className="bg-muted p-3 rounded-full transition-all duration-300 group-hover:scale-110 group-hover:border group-hover:border-primary/50">
-                <Instagram className="h-6 w-6 text-muted-foreground" />
-              </div>
-            </Link>
-          </div>
-
-          {/* Footer */}
-          <div className="text-center text-sm flex flex-col">
-            <span>© {new Date().getFullYear()} - Hilquias Ferreira Melo</span>
-            <span className="text-muted-foreground">
-              Todos os direitos reservados
-            </span>
+            <Social link="#" icon={Youtube} />
           </div>
         </div>
       </div>
