@@ -1,11 +1,11 @@
 import { Helmet } from 'react-helmet-async'
 
-export function Dash() {
+export function Admin() {
   return (
     <>
-      <Helmet title="Dashboard" />
+      <Helmet title="Admin" />
 
-      <h1>Dash</h1>
+      <h1>Admin</h1>
     </>
   )
 }
