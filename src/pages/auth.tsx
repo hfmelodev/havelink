@@ -34,7 +34,7 @@ export function Auth() {
         description: 'Você será redirecionado para a página inicial',
       })
 
-      navigate('/', { replace: true })
+      navigate('/admin', { replace: true })
     } catch (err) {
       console.log(err)
 
