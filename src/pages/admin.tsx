@@ -1,3 +1,4 @@
+import { Header } from '@/components/app/header'
 import { Helmet } from 'react-helmet-async'
 
 export function Admin() {
@@ -5,10 +6,8 @@ export function Admin() {
     <>
       <Helmet title="Admin" />
 
-      <div className="min-h-[80vh] flex items-center justify-center w-full py-4">
-        <h1 className="text-3xl md:text-4xl font-calSans bg-clip-text text-neutral-300">
-          Admin
-        </h1>
+      <div className="flex items-center gap-4 mt-4 w-full p-2 bg-secondary/50 border border-primary/30 rounded-xl">
+        <Header />
       </div>
     </>
   )
