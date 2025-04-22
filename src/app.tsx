@@ -7,7 +7,7 @@ export function App() {
   return (
     <HelmetProvider>
       <Helmet titleTemplate="%s | HaveLink" />
-      <Toaster richColors />
+      <Toaster richColors theme="dark" />
       <BrowserRouter>
         <Routes />
       </BrowserRouter>
