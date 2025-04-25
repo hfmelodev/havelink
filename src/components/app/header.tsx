@@ -21,7 +21,7 @@ export function Header() {
   }
 
   return (
-    <header className="flex items-center gap-4 w-full">
+    <header className="flex items-center gap-4 mt-4 w-full p-2 bg-secondary/50 border border-primary/30 rounded-xl">
       <Logo size="sm" sizeIcon="sm" />
 
       <Separator orientation="vertical" className="h-6" />
@@ -31,7 +31,7 @@ export function Header() {
         <div className="md:hidden flex items-center justify-end w-full">
           <Sheet>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="rounded">
                 <Menu />
               </Button>
             </SheetTrigger>
@@ -70,7 +70,7 @@ export function Header() {
 
                 <Button
                   variant="default"
-                  className="flex cursor-pointer rounded hover:bg-transparent hover:text-primary mt-auto"
+                  className="flex cursor-pointer rounded hover:bg-transparent hover:text-primary mt-auto "
                   onClick={handleLogout}
                 >
                   <LogOut />

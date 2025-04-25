@@ -6,7 +6,7 @@ export function Networks() {
     <>
       <Helmet title="Social" />
 
-      <div className="flex items-center gap-4 mt-4 w-full p-2 bg-secondary/50 border border-primary/30 rounded-xl">
+      <div className="flex flex-col w-full">
         <Header />
       </div>
     </>
