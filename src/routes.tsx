@@ -1,7 +1,7 @@
 import { Route, Routes as Router } from 'react-router'
 import { AppLayout } from './_layouts/app'
 import { AuthLayout } from './_layouts/auth'
-import { PrivateRoute } from './middleware'
+import { PrivateRoute, PublicRoute } from './middleware'
 import { NotFound } from './not-found'
 import { Admin } from './pages/admin'
 import { Auth } from './pages/auth'
@@ -32,7 +32,14 @@ export function Routes() {
       </Route>
 
       <Route path="auth" element={<AuthLayout />}>
-        <Route index element={<Auth />} />
+        <Route
+          index
+          element={
+            <PublicRoute>
+              <Auth />
+            </PublicRoute>
+          }
+        />
       </Route>
 
       <Route path="*" element={<NotFound />} />

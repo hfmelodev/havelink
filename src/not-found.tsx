@@ -12,7 +12,7 @@ export function NotFound() {
 
         <Link
           to="/"
-          className="mt-6 inline-block bg-primary hover:bg-primary/90 rounded px-6 py-2 text-neutral-950 font-medium shadow transition"
+          className="mt-6 inline-block bg-primary hover:bg-primary/90 rounded px-6 py-2 shadow transition"
         >
           Voltar para o início
         </Link>

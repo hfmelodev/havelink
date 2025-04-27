@@ -3,7 +3,7 @@ import { Navigate, useNavigate } from 'react-router'
 import { Loading } from './components/app/loading'
 import { auth } from './lib/firebase'
 
-type PrivateRouteProps = {
+type RouteProps = {
   children: ReactNode
 }
 
@@ -12,7 +12,7 @@ type MinimalUser = {
   email: string | null
 }
 
-export function PrivateRoute({ children }: PrivateRouteProps) {
+export function PrivateRoute({ children }: RouteProps) {
   const [loading, setLoading] = useState(true)
   const [signedIn, setSignedIn] = useState(false)
 
@@ -51,6 +51,32 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
 
   if (!signedIn) {
     return <Navigate to="/auth" replace />
+  }
+
+  return children
+}
+
+export function PublicRoute({ children }: RouteProps) {
+  const [loading, setLoading] = useState(true)
+  const [signedIn, setSignedIn] = useState(false)
+
+  useEffect(() => {
+    const unsub = auth.onAuthStateChanged(user => {
+      if (user) {
+        setSignedIn(true)
+      }
+      setLoading(false)
+    })
+
+    return () => unsub()
+  }, [])
+
+  if (loading) {
+    return <Loading isLoading={loading} />
+  }
+
+  if (signedIn) {
+    return <Navigate to="/admin" replace />
   }
 
   return children

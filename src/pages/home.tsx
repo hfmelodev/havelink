@@ -1,17 +1,90 @@
 import { Social } from '@/components/app/social'
 import { Button } from '@/components/ui/button'
+import { firebase } from '@/lib/firebase'
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+} from 'firebase/firestore'
 import {
   ExternalLink,
   Github,
-  Globe,
   Instagram,
+  Link as LinkIcon,
   Linkedin,
-  Youtube,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { Link } from 'react-router'
+import { toast } from 'sonner'
+
+interface LinkProps {
+  id: string
+  name: string
+  url: string
+  backgroundColor: string
+  textColor: string
+}
+
+interface NetworksProps {
+  instagram: string
+  github: string
+  linkedin: string
+}
 
 export function Home() {
+  const [links, setLinks] = useState<LinkProps[]>([])
+  const [networks, setNetworks] = useState<NetworksProps>({} as NetworksProps)
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const linksRef = collection(firebase, 'links')
+        const queryRef = query(linksRef, orderBy('createdAt', 'desc'))
+        const linksPromise = getDocs(queryRef)
+
+        const networksDocRef = doc(firebase, 'networks', 'links')
+        const networksPromise = getDoc(networksDocRef)
+
+        const [linksSnapshot, networksSnapshot] = await Promise.all([
+          linksPromise,
+          networksPromise,
+        ])
+
+        // Processar links
+        const linksData: LinkProps[] = linksSnapshot.docs.map(doc => {
+          const docData = doc.data() as Omit<LinkProps, 'id'>
+
+          return {
+            id: doc.id,
+            name: docData.name,
+            url: docData.url,
+            backgroundColor: docData.backgroundColor,
+            textColor: docData.textColor,
+          }
+        })
+        setLinks(linksData)
+
+        // Processar networks
+        if (networksSnapshot.exists()) {
+          const networksData = networksSnapshot.data() as NetworksProps
+          setNetworks(networksData)
+        }
+      } catch (err) {
+        console.error(err)
+
+        toast.error('Erro ao buscar dados', {
+          description: 'Tente novamente mais tarde',
+        })
+      }
+    }
+
+    fetchData()
+  }, [])
+
   return (
     <>
       <Helmet title="Home" />
@@ -21,6 +94,7 @@ export function Home() {
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-primary/50 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -right-20 w-40 h-40 bg-primary/50 rounded-full blur-3xl" />
 
+          {/* Hero section */}
           <div className="text-center space-y-4 relative z-10">
             <div className="w-24 h-24 mx-auto bg-primary/20 rounded-full flex items-center justify-center shadow-xl">
               <img
@@ -38,48 +112,37 @@ export function Home() {
           </div>
 
           {/* Links section */}
-          <div className="space-y-4">
-            <Link to="#" className="block">
-              <Button
-                size="lg"
-                className="w-full bg-primary/70 text-primary-foreground font-medium py-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-primary/20 hover:shadow-xl flex items-center gap-2"
-              >
-                <Youtube className="size-5" />
-                Canal do YouTube
-                <ExternalLink className="size-4 ml-auto" />
-              </Button>
-            </Link>
-
-            <Link to="#" className="block">
-              <Button
-                size="lg"
-                className="w-full bg-primary/70 text-primary-foreground font-medium py-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-primary/20 hover:shadow-xl flex items-center gap-2"
-              >
-                <Github className="size-5" />
-                Conta do GitHub
-                <ExternalLink className="size-4 ml-auto" />
-              </Button>
-            </Link>
-
-            <Link to="#" className="block">
-              <Button
-                size="lg"
-                className="w-full bg-primary/70 text-primary-foreground font-medium py-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-primary/20 hover:shadow-xl flex items-center gap-2"
-              >
-                <Globe className="size-5" />
-                Meu WebSite
-                <ExternalLink className="size-4 ml-auto" />
-              </Button>
-            </Link>
+          <div className="flex flex-col gap-2">
+            {links.length > 0 ? (
+              links.map(link => (
+                <Link key={link.id} to={link.url} target="_blank">
+                  <Button
+                    style={{
+                      backgroundColor: link.backgroundColor,
+                      color: link.textColor,
+                    }}
+                    className="w-full font-medium py-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-primary/20 hover:shadow-xl flex items-center gap-2"
+                  >
+                    <LinkIcon className="size-5" />
+                    {link.name}
+                    <ExternalLink className="size-4 ml-auto text-white" />
+                  </Button>
+                </Link>
+              ))
+            ) : (
+              <p className="w-full bg-muted-foreground/10 text-muted-foreground font-medium  px-4 py-3 rounded-xl shadow-lg transition-all text-center">
+                Nenhum link cadastrado ainda{' '}
+              </p>
+            )}
           </div>
 
           {/* Social media icons */}
           <div className="flex justify-center gap-6 pt-6 relative z-10">
-            <Social link="#" icon={Instagram} />
+            <Social link={networks.instagram} icon={Instagram} />
 
-            <Social link="#" icon={Github} />
+            <Social link={networks.github} icon={Github} />
 
-            <Social link="#" icon={Linkedin} />
+            <Social link={networks.linkedin} icon={Linkedin} />
           </div>
         </div>
       </div>
