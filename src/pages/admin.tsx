@@ -4,17 +4,56 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { firebase } from '@/lib/firebase'
-import { addDoc, collection } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  onSnapshot,
+  orderBy,
+  query,
+} from 'firebase/firestore'
 import { BadgePlus, Link, SquarePen, Trash } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { toast } from 'sonner'
+
+interface LinkProps {
+  id: string
+  name: string
+  url: string
+  backgroundColor: string
+  textColor: string
+}
 
 export function Admin() {
   const [nameLink, setNameLink] = useState<string>('')
   const [urlLink, setUrlLink] = useState<string>('')
   const [linkBackground, setLinkBackground] = useState<string>('#E11D48')
   const [linkTextColor, setLinkTextColor] = useState<string>('#FFFFFF')
+
+  const [links, setLinks] = useState<LinkProps[]>([])
+
+  useEffect(() => {
+    const links = collection(firebase, 'links')
+    const queryRef = query(links, orderBy('createdAt', 'desc')) // Ordenar por data de criação descrescente para exibir os links mais recentes primeiro
+
+    const unsub = onSnapshot(queryRef, snapshot => {
+      const data: LinkProps[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        name: doc.data().name,
+        url: doc.data().url,
+        backgroundColor: doc.data().backgroundColor,
+        textColor: doc.data().textColor,
+      }))
+
+      setLinks(data)
+    })
+
+    return () => {
+      unsub()
+    }
+  }, [])
 
   async function handleCreateLink(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -53,6 +92,24 @@ export function Admin() {
     }
   }
 
+  async function handleDeleteLink(id: string) {
+    try {
+      const link = doc(firebase, 'links', id)
+
+      await deleteDoc(link)
+
+      toast.success('Exclusão realizada com sucesso', {
+        description: 'Este link foi removido da sua lista de links',
+      })
+    } catch (err) {
+      console.log(err)
+
+      toast.error('Erro ao excluir link', {
+        description: 'Tente novamente mais tarde',
+      })
+    }
+  }
+
   return (
     <>
       <Helmet title="Admin" />
@@ -79,7 +136,7 @@ export function Admin() {
           </div>
 
           <div className="space-y-1">
-            <Label htmlFor="url-link">URL do link</Label>
+            <Label htmlFor="url-link">Insira a URL</Label>
             <div className="relative">
               <Link className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground size-4" />
               <Input
@@ -95,7 +152,7 @@ export function Admin() {
 
           <section className="my-4 flex items-center gap-10">
             <div className="flex items-center gap-2">
-              <Label htmlFor="link-background">Fundo do link</Label>
+              <Label htmlFor="link-background">Cor do Fundo</Label>
               <input
                 type="color"
                 id="link-background"
@@ -107,7 +164,7 @@ export function Admin() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Label htmlFor="text-color">Cor do texto</Label>
+              <Label htmlFor="text-color">Cor do Texto</Label>
               <input
                 type="color"
                 id="text-color"
@@ -122,7 +179,7 @@ export function Admin() {
           {nameLink && (
             <div className="flex items-center justify-start flex-col mb-7 p-1 border border-primary/30 rounded w-full">
               <Label className="text-base font-medium mt-2 mb-3 flex items-center gap-2">
-                Observe como está ficando seus links{' '}
+                Observe como está ficando{' '}
                 <span className="animate-bounce">👇</span>
               </Label>
 
@@ -144,29 +201,50 @@ export function Admin() {
             className="w-full rounded cursor-pointer font-bold"
           >
             <BadgePlus className="h-4 w-4" />
-            Criar link
+            Criar
           </Button>
         </form>
       </div>
 
-      <Separator orientation="horizontal" className="my-10" />
+      <Separator orientation="horizontal" className="mt-10 mb-7" />
 
-      <div className="flex items-center justify-start flex-col mb-7 p-1 w-full">
-        <Label className="text-base font-medium mt-2 mb-3 flex items-center gap-2">
+      <div className="flex items-center gap-2 justify-start flex-col px-1 w-full">
+        <Label className="text-base font-medium mb-3 flex items-center gap-2">
           Meus Links <Link className="size-4" />
         </Label>
 
-        <article className="w-full flex items-center justify-between py-1 px-2 border border-neutral-600 transition rounded select-none">
-          <p className="text-sm">Canal de YouTube</p>
+        {links.length > 0 ? (
+          links.map(link => (
+            <article
+              key={link.id}
+              className="w-full flex items-center justify-between py-1 px-2 hover:opacity-90 transition rounded select-none"
+              style={{
+                backgroundColor: link.backgroundColor,
+                color: link.textColor,
+              }}
+            >
+              <div className="flex items-center gap-1.5">
+                <Link className="size-4" />
+                <p className="text-sm">{link.name}</p>
+              </div>
 
-          <Button
-            variant="ghost"
-            type="button"
-            className="rounded cursor-pointer font-bold px-3"
-          >
-            <Trash className="h-4 w-4" />
-          </Button>
-        </article>
+              <Button
+                variant="ghost"
+                type="button"
+                className="rounded cursor-pointer font-bold px-3"
+                onClick={() => handleDeleteLink(link.id)}
+              >
+                <Trash className="h-4 w-4 text-white" />
+              </Button>
+            </article>
+          ))
+        ) : (
+          <div className="w-full flex items-center justify-center p-3 mb-3 border border-neutral-600 transition rounded">
+            <p className="text-sm text-muted-foreground">
+              Você ainda não possui nenhum criado
+            </p>
+          </div>
+        )}
       </div>
     </>
   )

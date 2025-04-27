@@ -2,10 +2,10 @@ import { Social } from '@/components/app/social'
 import { Button } from '@/components/ui/button'
 import {
   ExternalLink,
-  Facebook,
   Github,
   Globe,
   Instagram,
+  Linkedin,
   Youtube,
 } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
@@ -75,11 +75,11 @@ export function Home() {
 
           {/* Social media icons */}
           <div className="flex justify-center gap-6 pt-6 relative z-10">
-            <Social link="#" icon={Facebook} />
-
             <Social link="#" icon={Instagram} />
 
-            <Social link="#" icon={Youtube} />
+            <Social link="#" icon={Github} />
+
+            <Social link="#" icon={Linkedin} />
           </div>
         </div>
       </div>
